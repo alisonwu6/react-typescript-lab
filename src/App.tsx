@@ -1,29 +1,26 @@
-import React, { useState } from 'react';
-import './App.css';
+import React from 'react';
+import styled from 'styled-components';
 
-type BtnProps = {
-  currentNum: number,
-  onClickHandler: () => void
+type BtnType = {
+  colorStatus: boolean
 }
 
-const Btn: React.FC<BtnProps> = ({ currentNum, onClickHandler }) => {
-  return (
-    <button onClick={ onClickHandler }>
-      Plus 1,
-      <span>Total: { currentNum }</span>
-    </button>
-  )
-}
+const Button = styled.button<BtnType>`
+  background: transparent;
+  border-radius: 3px;
+  border: 2px solid ${props => props.colorStatus === false ? 'grey' : 'seagreen'};
+  color: #000;
+  margin: 0 1em;
+  padding: 0.25em 1em;
+`
+const H1 = styled.h1`
+  color: blue;
+`
 
 const App: React.FC = () => {
-  const [num, setNum] = useState(0);
-  const btnClickHandler = () => {
-    setNum(num + 1);
-  }
-
   return <>
-    <h3>Counter: {num}</h3>
-    <Btn currentNum={ num } onClickHandler={ btnClickHandler } />
+    <H1>Hello</H1>
+    <Button colorStatus={false}>Submit</Button>
   </>
 }
 
