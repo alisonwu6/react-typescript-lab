@@ -1,37 +1,60 @@
 import React, { useEffect, useState } from 'react'
 
-let interval: NodeJS.Timeout | null = null
-let num = 0
-
+type Comment = {
+  postId: number
+  id: number
+  name: string
+  email: string
+  body: string
+}
 const App: React.FC = () => {
-  const [counter, setCounter] = useState(0)
-  useEffect(() => {
-    interval = setInterval(() => {
-      num++
-      console.log(num)
-    }, 1000)
+  const [postId, setPostId] = useState(1)
+  const [error, setError] = useState<Error | null>(null)
+  const [loading, setLoading] = useState(false);
 
-    return () => {
-      console.log('pre re-render')
-      if (interval !== null) {
-        clearInterval(interval)
-        num = 0
-      }
+  async function fetchData(id: number) {
+    setLoading(true)
+    try {
+      const res = await fetch(
+        `https://jsonplaceholder.typicode.com/comments?postId=${postId}`
+      )
+      const data = (await res.json()) as Comment[]
+      console.log('fetchData data: ', `ID: ${id}`, data)
+    } catch (error) {
+      setError(error as Error)
     }
-  }, [counter])
-
-  function clickHandler() {
-    setCounter(counter + 1)
+    setLoading(false)
   }
 
+  function clickHandler(id: number) {
+    setPostId(id)
+  }
+
+  useEffect(() => {
+    // ＊ fetch
+    // fetch('https://jsonplaceholder.typicode.com/comments?postId=1')
+    //   .then((res) => res.json())
+    //   .then((data: Comment[]) => {
+    //     console.log('fetch data: ', data)
+    //   })
+
+    // ＊ async/await
+    fetchData(postId)
+  }, [postId])
+
   return (
+    !loading ? 
     <>
-      <h1>
-        Counter has been clicked: {counter} {counter <= 1 ? 'time' : 'times'}
-      </h1>
-      <p>check your console for more information</p>
-      <button onClick={clickHandler}>Reset</button>
+      <h1>Fetch</h1>
+      <button onClick={() => clickHandler(1)}>ID 1 data</button>
+      <button onClick={() => clickHandler(2)}>ID 2 data</button>
+      {error === null ? (
+        <p style={{ color: 'green' }}>Successfully get data</p>
+      ) : (
+        <p style={{ color: 'red' }}>failed to get data</p>
+      )}
     </>
+    : <h1>Loading...</h1>
   )
 }
 
