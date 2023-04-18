@@ -8,7 +8,6 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  // React.StrictMode causes double rendering of components which lead to useEffect being called multiple times.
+  <App />
 );

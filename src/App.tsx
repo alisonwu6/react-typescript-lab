@@ -1,36 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
+
+let interval: NodeJS.Timeout | null = null
+let num = 0
 
 const App: React.FC = () => {
-  // ＊ Mount => call data from api
+  const [counter, setCounter] = useState(0)
   useEffect(() => {
+    interval = setInterval(() => {
+      num++
+      console.log(num)
+    }, 1000)
+
     return () => {
-      console.log('Hello useEffect')
-    };
-  }, []);
-  // ---------------------------------------------------------------------------
+      console.log('pre re-render')
+      if (interval !== null) {
+        clearInterval(interval)
+        num = 0
+      }
+    }
+  }, [counter])
 
-  const [counter, setCounter] = useState(0);
-  const [text, setText] = useState('Even');
-
-  // ＊ ❌ too many re-renders. 
-  // console.log('text', text)
-  // setText("XXX")
-  // ---------------------------------------------------------------------------
-
-  useEffect(() => {
-    console.log('useEffect -> setText')
-    const currentText = counter % 2 === 0 ? 'Even' : 'Odd';
-    setText(currentText)
-  }, [counter]);
-
-  const counterHandler = () => {
+  function clickHandler() {
     setCounter(counter + 1)
   }
 
-  return <>
-    <h1>Counter: { counter }  <span>({ text })</span></h1>
-    <button onClick={ counterHandler }>+1</button>
-  </>
+  return (
+    <>
+      <h1>
+        Counter has been clicked: {counter} {counter <= 1 ? 'time' : 'times'}
+      </h1>
+      <p>check your console for more information</p>
+      <button onClick={clickHandler}>Reset</button>
+    </>
+  )
 }
 
-export default App;
+export default App
