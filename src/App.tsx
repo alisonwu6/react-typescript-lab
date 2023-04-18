@@ -1,20 +1,4 @@
-import React from 'react'
-
-type BProps = {
-  totalScore: number;
-}
-type BState = {
-  // totalScore: number;
-}
-
-type AProps = {
-  totalScore: number;
-}
-type AState = {
-  // totalScore: number;
-}
-
-// --------------------------------------------------------
+import React, { useState, useEffect } from 'react'
 
 function getCurrentScore() {
   return 100
@@ -30,86 +14,33 @@ function getScoreByBoardName(boardName: String) {
   return 0
 }
 
-// --------------------------------------------------------
-
-class ScoreBoardB extends React.Component<BProps, BState> {
-  // eslint-disable-next-line
-  constructor(props: BProps) {
-    super(props)
-    // this.state = {
-    //   totalScore: 0
-    // }
-  }
-
-  // 組件被安裝時
-  componentDidMount() {
-    // this.setState({
-    //   totalScore: getCurrentScore() + getScoreByBoardName('boardB')
-    // })
-  }
-
-  render(): React.ReactNode {
-    return <>
-      <p>B Total Score: { this.props.totalScore }</p>
-    </>
-  }
+// 自定義 hook 開頭必須為 use
+const useGetTotalScore = (boardName: string) => {
+  const [score, setScore] = useState(0);
+  useEffect(() => {
+    return () => {
+      const currentScore = getCurrentScore() + getScoreByBoardName(boardName)
+      setScore(currentScore);
+    };
+  });
+  return score
 }
 
-class ScoreBoardA extends React.Component<AProps, AState> {
-  // eslint-disable-next-line
-  constructor(props: AProps) {
-    super(props)
-    // this.state = {
-    //   totalScore: 0
-    // }
-  }
-
-  // 組件被安裝時
-  componentDidMount() {
-    // this.setState({
-    //   totalScore: getCurrentScore() + getScoreByBoardName('boardA')
-    // })
-  }
-
-  render(): React.ReactNode {
-    return <>
-      {/* <p>A Total Score: {this.state.totalScore}</p> */ }
-      <p>A Total Score: { this.props.totalScore }</p>
-    </>
-  }
+const ScoreBoardB: React.FC = () => {
+  const score = useGetTotalScore('boardB')
+  return <p>B Total Score: { score }</p>
 }
 
-
-// HOC寫法！
-function withTotalScore(WrappedComponent: React.ComponentType<any>, boardName: string) {
-  return class extends React.Component<{}, { totalScore: number }> {
-    constructor(props: {}) {
-      super(props);
-      this.state = {
-        totalScore: 0
-      };
-    }
-    componentDidMount() {
-      this.setState({
-        totalScore: getCurrentScore() + getScoreByBoardName(boardName)
-      })
-    }
-
-    render(): React.ReactNode {
-      return <WrappedComponent totalScore={ this.state.totalScore } />
-    }
-  }
+const ScoreBoardA: React.FC = () => {
+  const score = useGetTotalScore('boardA')
+  return <p>A Total Score: { score }</p>
 }
 
 function Main() {
-  const WrappedComponentA = withTotalScore(ScoreBoardA, 'boardA')
-  const WrappedComponentB = withTotalScore(ScoreBoardB, 'boardB')
   return (
     <>
-      {/* <ScoreBoardA />
-      <ScoreBoardB /> */}
-      <WrappedComponentA />
-      <WrappedComponentB />
+      <ScoreBoardA />
+      <ScoreBoardB />
     </>
   )
 }
