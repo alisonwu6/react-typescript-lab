@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 /**
  * 1. Basic usage of useState
@@ -46,21 +46,35 @@ import React, { useState } from 'react';
  * 3. the render scope of state
  */
 const App: React.FC = () => {
-  const [counter, setCounter] = useState(0);
+  // ＊ Mount => call data from api
+  useEffect(() => {
+    return () => {
+      console.log('Hello useEffect')
+    };
+  }, []);
+  // ---------------------------------------------------------------------------
 
-  function counterHandler() {
-    // setCounter(counter + 1) // 前一次的 counter = 0
-    // setCounter(counter + 1) // 依然是使用前一次的狀態 counter = 0
-    function cb(prev: number) {
-      return prev + 1;
-    }
-    setCounter(cb);
-    setCounter(cb);
+  const [counter, setCounter] = useState(0);
+  const [text, setText] = useState('Even');
+
+  // ＊ ❌ too many re-renders. 
+  // console.log('text', text)
+  // setText("XXX")
+  // ---------------------------------------------------------------------------
+
+  useEffect(() => {
+    console.log('useEffect -> setText')
+    const currentText = counter % 2 === 0 ? 'Even' : 'Odd';
+    setText(currentText)
+  }, [counter]);
+
+  const counterHandler = () => {
+    setCounter(counter + 1)
   }
 
   return <>
-    <h1>Counter: { counter }</h1>
-    <button onClick={ counterHandler }>Click me</button>
+    <h1>Counter: { counter }  <span>({ text })</span></h1>
+    <button onClick={ counterHandler }>+1</button>
   </>
 }
 
