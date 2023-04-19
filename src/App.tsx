@@ -1,81 +1,71 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 
-/**
- * 1. Basic usage of useState
- */
-// const App: React.FC = () => {
-//   const [counter, setCounter] = useState(0);
-
-//   function counterHandler() {
-//     setCounter(counter + 1)
-//   }
-
-//   return <>
-//     <h1>Counter: { counter }</h1>
-//     <button onClick={ counterHandler }>+1</button>
-//   </>
-// }
-
-// export default App;
-
-/**
- * 2. batching update [https://overreacted.io/react-as-a-ui-runtime/#batching]
- */
-// const Parent: React.FC = () => {
-//   let [count, setCount] = useState(0);
-//   return (
-//     <div onClick={ () => setCount(count + 1) }>
-//       Parent clicked { count } times
-//       <Child />
-//     </div>
-//   );
-// }
-
-// const Child: React.FC = () => {
-//   let [count, setCount] = useState(0);
-//   return (
-//     <button onClick={ () => setCount(count + 1) }>
-//       Child clicked { count } times
-//     </button>
-//   );
-// }
-
-// export default Parent;
-
-/**
- * 3. the render scope of state
- */
-const App: React.FC = () => {
-  // ＊ Mount => call data from api
-  useEffect(() => {
-    return () => {
-      console.log('Hello useEffect')
-    };
-  }, []);
-  // ---------------------------------------------------------------------------
-
-  const [counter, setCounter] = useState(0);
-  const [text, setText] = useState('Even');
-
-  // ＊ ❌ too many re-renders. 
-  // console.log('text', text)
-  // setText("XXX")
-  // ---------------------------------------------------------------------------
-
-  useEffect(() => {
-    console.log('useEffect -> setText')
-    const currentText = counter % 2 === 0 ? 'Even' : 'Odd';
-    setText(currentText)
-  }, [counter]);
-
-  const counterHandler = () => {
-    setCounter(counter + 1)
-  }
-
-  return <>
-    <h1>Counter: { counter }  <span>({ text })</span></h1>
-    <button onClick={ counterHandler }>+1</button>
-  </>
+type Comment = {
+  postId: number
+  id: number
+  name: string
+  email: string
+  body: string
 }
 
-export default App;
+// A React Customize Hook
+function useFetchAPI() {
+  const [postId, setPostId] = useState(1)
+  const [error, setError] = useState<Error | null>(null)
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState([] as Comment[]);
+
+  async function fetchData(id: number) {
+    setLoading(true)
+    try {
+      const res = await fetch(
+        `https://jsonplaceholder.typicode.com/comments?postId=${postId}`
+      )
+      const resData = (await res.json()) as Comment[]
+      setData(resData)
+      console.log('fetchData data: ', `ID: ${id}`, resData)
+    } catch (error) {
+      setError(error as Error)
+    }
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    fetchData(postId)
+  }, [postId]);
+
+  return [data, loading, error, setPostId] as const
+  // or {data, loading, error, setPostId}
+}
+
+const App: React.FC = () => {
+  const [data, loading, error, setPostId] = useFetchAPI()
+
+  function clickHandler(id: number) {
+    setPostId(id)
+  }
+
+  return (
+    !loading ? 
+    <>
+      <h1>Fetch</h1>
+      <button onClick={() => clickHandler(1)}>ID 1 data</button>
+      <button onClick={() => clickHandler(2)}>ID 2 data</button>
+      {error === null ? (
+        <p style={{ color: 'green' }}>Successfully get data</p>
+      ) : (
+        <p style={{ color: 'red' }}>failed to get data</p>
+      )}
+      {
+        // since the index may change when the list is re-ordered or items are added/removed. 
+        // It is better to use a unique value for the key property, such as an id.
+        data.length > 0 && data.map(item => {
+          return <p key={item.id}>{item.email}</p>
+        })
+      }
+    </>
+    : <h1>Loading...</h1>
+  )
+}
+
+export default App
