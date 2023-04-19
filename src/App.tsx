@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useState } from 'react'
 
 // Begin (original way of getting HTML element) ------
 // const App: React.FC = () => {
@@ -20,23 +20,61 @@ import React, { useRef, useEffect } from 'react'
 
 // Begin (use Ref to get HTML element) ------
 const App: React.FC = () => {
-  const h1Ref = useRef<HTMLHeadingElement>(null)
+  const [accountVal, setAccountVal] = useState('')
+  const [passwordVal, setPasswordVal] = useState('')
 
-  useEffect(() => {
-    console.log('h1Ref.current', h1Ref.current)
-  }, [])
+  function login() {
+    // Begin (a possible way) ------
+    // const account = document.getElementById('account') as HTMLInputElement
+    // const password = document.getElementById('password') as HTMLInputElement
+    // console.log('account', account.value)
+    // console.log('password', password.value)
+    // End (possible ways) ------
+
+    console.log('accountVal', accountVal)
+    console.log('passwordVal', passwordVal)
+  }
+
+  function onChangeAccountHandler(event: React.FormEvent<HTMLInputElement>) {
+    if (event.currentTarget) {
+      console.log('event.currentTarget.value', event.currentTarget.value)
+      setAccountVal(event.currentTarget.value)
+    }
+  }
+
+  function onChangePasswordHandler(event: React.FormEvent<HTMLInputElement>) {
+    if (event.currentTarget) {
+      console.log('event.currentTarget.value', event.currentTarget.value)
+      setPasswordVal(event.currentTarget.value)
+    }
+  }
+
   return (
     <>
-      <h1 ref={h1Ref}>Ref</h1>
+      <h1>Form</h1>
+      <p>帳號</p>
+      <input
+        type='text'
+        name=''
+        value={accountVal} /*雙向綁定*/
+        id='account'
+        onChange={onChangeAccountHandler}
+      />
+      <p>你輸入的帳號{accountVal}</p>
+      <p>密碼</p>
+      <p>你輸入的密碼</p>
+      <input
+        type='text'
+        name=''
+        value={passwordVal}
+        id='password'
+        onChange={onChangePasswordHandler}
+      />
+      <div>
+        <button onClick={login}>登入</button>
+      </div>
     </>
   )
 }
-// End (use Ref to get HTML element) ------
 
 export default App
-
-/** Procedure of Creating React Components
- * 1. create a component
- * 2. return jsx
- * 3. run callback of useEffect
- */
