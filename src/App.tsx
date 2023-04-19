@@ -1,9 +1,61 @@
-import React from 'react';
+import React, { useState } from 'react'
 
 const App: React.FC = () => {
-  return <>
-    <h1>Hello World</h1>
-  </>
+  const [accountVal, setAccountVal] = useState('')
+  const [passwordVal, setPasswordVal] = useState('')
+
+  function login() {
+    // Begin (a possible way) ------
+    // const account = document.getElementById('account') as HTMLInputElement
+    // const password = document.getElementById('password') as HTMLInputElement
+    // console.log('account', account.value)
+    // console.log('password', password.value)
+    // End (possible ways) ------
+
+    console.log('accountVal', accountVal)
+    console.log('passwordVal', passwordVal)
+  }
+
+  function onChangeAccountHandler(event: React.FormEvent<HTMLInputElement>) {
+    if (event.currentTarget) {
+      console.log('event.currentTarget.value', event.currentTarget.value)
+      setAccountVal(event.currentTarget.value)
+    }
+  }
+
+  function onChangePasswordHandler(event: React.FormEvent<HTMLInputElement>) {
+    if (event.currentTarget) {
+      console.log('event.currentTarget.value', event.currentTarget.value)
+      setPasswordVal(event.currentTarget.value)
+    }
+  }
+
+  return (
+    <>
+      <h1>Form</h1>
+      <p>帳號</p>
+      <input
+        type='text'
+        name=''
+        value={accountVal} /*雙向綁定*/
+        id='account'
+        onChange={onChangeAccountHandler}
+      />
+      <p>你輸入的帳號{accountVal}</p>
+      <p>密碼</p>
+      <p>你輸入的密碼</p>
+      <input
+        type='text'
+        name=''
+        value={passwordVal}
+        id='password'
+        onChange={onChangePasswordHandler}
+      />
+      <div>
+        <button onClick={login}>登入</button>
+      </div>
+    </>
+  )
 }
 
-export default App;
+export default App
