@@ -1,9 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react'
 
-const App: React.FC = () => {
-  return <>
-    <h1>Hello World</h1>
-  </>
+type Props = {
+  btnVisible: boolean
 }
 
-export default App;
+const D: React.FC<Props> = ({ btnVisible }) => {
+  console.log('btnVisible', btnVisible)
+  return <button>D按鈕</button>
+}
+
+const C: React.FC<Props> = ({ btnVisible }) => {
+  return (
+    <>
+      <p>C組件</p>
+      <D btnVisible={btnVisible} />
+    </>
+  )
+}
+
+const B: React.FC<Props> = ({ btnVisible }) => {
+  return (
+    <>
+      <p>B 組件</p>
+      <C btnVisible={btnVisible} />
+    </>
+  )
+}
+
+const App: React.FC = () => {
+  const [btnVisible, setBtnVisible] = useState(false)
+  return (
+    <>
+      <h1>APP</h1>
+      <B btnVisible={btnVisible} />
+    </>
+  )
+}
+export default App
