@@ -1,71 +1,42 @@
-import React, { useEffect, useState } from 'react'
+import React, { useRef, useEffect } from 'react'
 
-type Comment = {
-  postId: number
-  id: number
-  name: string
-  email: string
-  body: string
-}
+// Begin (original way of getting HTML element) ------
+// const App: React.FC = () => {
+//   const element = document.getElementById('h1')
+//   console.log('element', element)
 
-// A React Customize Hook
-function useFetchAPI() {
-  const [postId, setPostId] = useState(1)
-  const [error, setError] = useState<Error | null>(null)
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([] as Comment[]);
+//   useEffect(() => {
+//     const element = document.getElementById('h1')
+//     console.log('useEffect element:', element)
+//   }, [])
+//   return (
+//     <>
+//       <h1 id='h1'>Ref</h1>
+//     </>
+//   )
+// }
+// End (original way of getting HTML element) ------
 
-  async function fetchData(id: number) {
-    setLoading(true)
-    try {
-      const res = await fetch(
-        `https://jsonplaceholder.typicode.com/comments?postId=${postId}`
-      )
-      const resData = (await res.json()) as Comment[]
-      setData(resData)
-      console.log('fetchData data: ', `ID: ${id}`, resData)
-    } catch (error) {
-      setError(error as Error)
-    }
-    setLoading(false)
-  }
+
+// Begin (use Ref to get HTML element) ------
+const App: React.FC = () => {
+  const h1Ref = useRef<HTMLHeadingElement>(null)
 
   useEffect(() => {
-    fetchData(postId)
-  }, [postId]);
-
-  return [data, loading, error, setPostId] as const
-  // or {data, loading, error, setPostId}
-}
-
-const App: React.FC = () => {
-  const [data, loading, error, setPostId] = useFetchAPI()
-
-  function clickHandler(id: number) {
-    setPostId(id)
-  }
-
+    console.log('h1Ref.current', h1Ref.current)
+  }, [])
   return (
-    !loading ? 
     <>
-      <h1>Fetch</h1>
-      <button onClick={() => clickHandler(1)}>ID 1 data</button>
-      <button onClick={() => clickHandler(2)}>ID 2 data</button>
-      {error === null ? (
-        <p style={{ color: 'green' }}>Successfully get data</p>
-      ) : (
-        <p style={{ color: 'red' }}>failed to get data</p>
-      )}
-      {
-        // since the index may change when the list is re-ordered or items are added/removed. 
-        // It is better to use a unique value for the key property, such as an id.
-        data.length > 0 && data.map(item => {
-          return <p key={item.id}>{item.email}</p>
-        })
-      }
+      <h1 ref={h1Ref}>Ref</h1>
     </>
-    : <h1>Loading...</h1>
   )
 }
+// End (use Ref to get HTML element) ------
 
 export default App
+
+/** Procedure of Creating React Components
+ * 1. create a component
+ * 2. return jsx
+ * 3. run callback of useEffect
+ */
