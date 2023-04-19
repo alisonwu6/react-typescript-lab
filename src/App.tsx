@@ -1,30 +1,42 @@
-import React, { useState, useRef } from 'react'
-// useRef -> let you maintain the same reference across renders.
+import React, { useRef, useEffect } from 'react'
 
+// Begin (original way of getting HTML element) ------
+// const App: React.FC = () => {
+//   const element = document.getElementById('h1')
+//   console.log('element', element)
+
+//   useEffect(() => {
+//     const element = document.getElementById('h1')
+//     console.log('useEffect element:', element)
+//   }, [])
+//   return (
+//     <>
+//       <h1 id='h1'>Ref</h1>
+//     </>
+//   )
+// }
+// End (original way of getting HTML element) ------
+
+
+// Begin (use Ref to get HTML element) ------
 const App: React.FC = () => {
-  const [hidden, setHidden] = useState(false)
-  const sumRef = useRef(0);
+  const h1Ref = useRef<HTMLHeadingElement>(null)
 
-  // let sum = 0
-  console.log('-----[Render]', sumRef.current)
-
-  function click() {
-    sumRef.current = sumRef.current + 1
-    console.log('[Click] sumRef.current:', sumRef.current)
-
-    if (sumRef.current === 5) {
-      setHidden(true)
-    } else if (sumRef.current > 15) {
-      setHidden(false)
-    }
-  }
+  useEffect(() => {
+    console.log('h1Ref.current', h1Ref.current)
+  }, [])
   return (
     <>
-      <h1>Ref</h1>
-      <button onClick={click}>+1</button>
-      {hidden && <div>The hidden area</div>}
+      <h1 ref={h1Ref}>Ref</h1>
     </>
   )
 }
+// End (use Ref to get HTML element) ------
 
 export default App
+
+/** Procedure of Creating React Components
+ * 1. create a component
+ * 2. return jsx
+ * 3. run callback of useEffect
+ */
