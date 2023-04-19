@@ -7,10 +7,13 @@ type Comment = {
   email: string
   body: string
 }
-const App: React.FC = () => {
+
+// A React Customize Hook
+function useFetchAPI() {
   const [postId, setPostId] = useState(1)
   const [error, setError] = useState<Error | null>(null)
   const [loading, setLoading] = useState(false);
+  const [data, setData] = useState([] as Comment[]);
 
   async function fetchData(id: number) {
     setLoading(true)
@@ -18,29 +21,29 @@ const App: React.FC = () => {
       const res = await fetch(
         `https://jsonplaceholder.typicode.com/comments?postId=${postId}`
       )
-      const data = (await res.json()) as Comment[]
-      console.log('fetchData data: ', `ID: ${id}`, data)
+      const resData = (await res.json()) as Comment[]
+      setData(resData)
+      console.log('fetchData data: ', `ID: ${id}`, resData)
     } catch (error) {
       setError(error as Error)
     }
     setLoading(false)
   }
 
+  useEffect(() => {
+    fetchData(postId)
+  }, [postId]);
+
+  return [data, loading, error, setPostId] as const
+  // or {data, loading, error, setPostId}
+}
+
+const App: React.FC = () => {
+  const [data, loading, error, setPostId] = useFetchAPI()
+
   function clickHandler(id: number) {
     setPostId(id)
   }
-
-  useEffect(() => {
-    // ＊ fetch
-    // fetch('https://jsonplaceholder.typicode.com/comments?postId=1')
-    //   .then((res) => res.json())
-    //   .then((data: Comment[]) => {
-    //     console.log('fetch data: ', data)
-    //   })
-
-    // ＊ async/await
-    fetchData(postId)
-  }, [postId])
 
   return (
     !loading ? 
@@ -53,6 +56,13 @@ const App: React.FC = () => {
       ) : (
         <p style={{ color: 'red' }}>failed to get data</p>
       )}
+      {
+        // since the index may change when the list is re-ordered or items are added/removed. 
+        // It is better to use a unique value for the key property, such as an id.
+        data.length > 0 && data.map(item => {
+          return <p key={item.id}>{item.email}</p>
+        })
+      }
     </>
     : <h1>Loading...</h1>
   )
