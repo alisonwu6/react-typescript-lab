@@ -1,11 +1,13 @@
 import React from 'react'
 import {
-  Routes,
-  Route,
+  // Routes,
+  // Route,
   Link,
   Outlet,
   useParams,
   useNavigate,
+  RouteObject,
+  useRoutes,
 } from 'react-router-dom'
 
 const Home: React.FC = () => {
@@ -23,7 +25,7 @@ const Home: React.FC = () => {
           navigate('/about/item')
         }}
       >
-        About
+        About Item
       </button>
     </>
   )
@@ -48,11 +50,38 @@ const Item: React.FC = () => {
   return <p>Item !!!!</p>
 }
 
+const NotFound: React.FC = () => {
+  return <h1>404 Not Found</h1>
+}
+
+const routerConfig: RouteObject[] = [
+  {
+    path: '/',
+    element: <Home />,
+  },
+  {
+    path: '/about',
+    element: <About />,
+    children: [
+      {
+        path: '/about/:id',
+        element: <Item />,
+      },
+    ],
+  },
+  {
+    path: '*',
+    element: <NotFound />,
+  },
+]
+
 const App: React.FC = () => {
+  const element = useRoutes(routerConfig)
   return (
     <div className='App'>
       <h3>Welcome to React Router! [App Component]</h3>
-      <Routes>
+      {element}
+      {/* <Routes>
         <Route
           path='/'
           element={<Home />}
@@ -66,7 +95,7 @@ const App: React.FC = () => {
             element={<Item />}
           ></Route>
         </Route>
-      </Routes>
+      </Routes> */}
     </div>
   )
 }
