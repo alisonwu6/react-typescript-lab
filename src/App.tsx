@@ -1,64 +1,102 @@
-import React, { useState, useEffect, useMemo, useCallback, memo } from 'react'
+import React from 'react'
+import {
+  // Routes,
+  // Route,
+  Link,
+  Outlet,
+  useParams,
+  useNavigate,
+  RouteObject,
+  useRoutes,
+} from 'react-router-dom'
 
-type PropsB = {
-  num: number
-  obj: { name: string }
-}
-
-/**
- * 'memo' is used to wrap a functional component
- * and only re-render it if the props have changed.
- */
-const B: React.FC<PropsB> = memo(({ num, obj }) => {
-  console.log('Render B', num)
+const Home: React.FC = () => {
+  const navigate = useNavigate()
   return (
     <>
-      <h2>B Component</h2>
-      <p>Number: {num}</p>
-      <p>Name: {obj.name}</p>
+      <main>
+        <h4>[Home Component]</h4>
+      </main>
+      <nav>
+        <Link to='/about'>About</Link>
+      </nav>
+      <button
+        onClick={() => {
+          navigate('/about/item')
+        }}
+      >
+        About Item
+      </button>
     </>
   )
-})
+}
 
-const App: React.FC = () => {
-  console.log('Render App')
-  const [value, setValue] = useState(false)
-  const [num, setNum] = useState(0)
-
-  const [obj, setObj] = useState({ name: '' })
-  const memoObj = useMemo(() => {
-    return obj
-  }, [obj.name])
-
+const About: React.FC = () => {
   return (
     <>
-      <h1>Hooks</h1>
-      <B
-        num={num}
-        obj={memoObj}
-      />
-      <button
-        onClick={() => {
-          setValue(!value)
-        }}
-      >
-        Re-render
-      </button>
-      <button
-        onClick={() => {
-          setNum(100)
-        }}
-      >
-        Set Number
-      </button>
-      <button
-        onClick={() => {
-          setObj({ name: 'Joe' })
-        }}
-      >
-        Set Name
-      </button>
+      <main>
+        <h4>[About Component]</h4>
+      </main>
+      <nav>
+        <Link to='/'>Home</Link>
+      </nav>
+      <Outlet />
     </>
+  )
+}
+const Item: React.FC = () => {
+  const url = useParams()
+  console.log('url', url)
+  return <p>Item !!!!</p>
+}
+
+const NotFound: React.FC = () => {
+  return <h1>404 Not Found</h1>
+}
+
+const routerConfig: RouteObject[] = [
+  {
+    path: '/',
+    element: <Home />,
+  },
+  {
+    path: '/about',
+    element: <About />,
+    children: [
+      {
+        path: '/about/:id',
+        element: <Item />,
+      },
+    ],
+  },
+  {
+    path: '*',
+    element: <NotFound />,
+  },
+]
+
+const App: React.FC = () => {
+  const element = useRoutes(routerConfig)
+  return (
+    <div className='App'>
+      <h3>Welcome to React Router! [App Component]</h3>
+      {element}
+      {/* <Routes>
+        <Route
+          path='/'
+          element={<Home />}
+        />
+        <Route
+          path='about'
+          element={<About />}
+        >
+          <Route
+            path=':item'
+            element={<Item />}
+          ></Route>
+        </Route>
+      </Routes> */}
+    </div>
   )
 }
 
