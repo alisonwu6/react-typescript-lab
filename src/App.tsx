@@ -1,46 +1,62 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useMemo, useCallback, memo } from 'react'
+
+type PropsB = {
+  num: number
+  obj: { name: string }
+}
+
+/**
+ * 'memo' is used to wrap a functional component
+ * and only re-render it if the props have changed.
+ */
+const B: React.FC<PropsB> = memo(({ num, obj }) => {
+  console.log('Render B', num)
+  return (
+    <>
+      <h2>B Component</h2>
+      <p>Number: {num}</p>
+      <p>Name: {obj.name}</p>
+    </>
+  )
+})
 
 const App: React.FC = () => {
-  console.log('Render')
-
+  console.log('Render App')
   const [value, setValue] = useState(false)
-  // const aa = 1000
+  const [num, setNum] = useState(0)
 
-  /**
-   * The 'obj' object makes the dependencies of useEffect Hook change on every render.
-   * => useMemo to memoize values.
-   * => useCallback to memoize a function.
-   */
-  // const obj = { name: 'Joe', data: { gender: 'male', age: 30 } }
-
-  // useMemo (object, array, function)
+  const [obj, setObj] = useState({ name: '' })
   const memoObj = useMemo(() => {
-    const obj = { name: 'Joe', data: { gender: 'female', age: 30 } }
     return obj
-  }, [])
-
-  // const memoFunc1 = useMemo(() => {
-  //   return () => {}
-  // }, [])
-
-  // const memoFunc2 = useCallback(() => {
-  //   console.log('here')
-  // }, [])
-
-  // Shallow Compare
-  useEffect(() => {
-    console.log('useEffect')
-  }, [memoObj])
+  }, [obj.name])
 
   return (
     <>
       <h1>Hooks</h1>
+      <B
+        num={num}
+        obj={memoObj}
+      />
       <button
         onClick={() => {
           setValue(!value)
         }}
       >
         Re-render
+      </button>
+      <button
+        onClick={() => {
+          setNum(100)
+        }}
+      >
+        Set Number
+      </button>
+      <button
+        onClick={() => {
+          setObj({ name: 'Joe' })
+        }}
+      >
+        Set Name
       </button>
     </>
   )
