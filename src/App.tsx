@@ -1,102 +1,98 @@
-import React from 'react'
-import {
-  // Routes,
-  // Route,
-  Link,
-  Outlet,
-  useParams,
-  useNavigate,
-  RouteObject,
-  useRoutes,
-} from 'react-router-dom'
+import styled from 'styled-components'
+import { useAppSelector, useAppDispatch } from './hook'
+import { addTimeStamp, addTodo } from './slices/todo'
+import { useState } from 'react'
 
-const Home: React.FC = () => {
-  const navigate = useNavigate()
+const Wrapper = styled.div`
+  padding: 1.5rem;
+`
+
+const Title = styled.h2`
+  font-weight: 900;
+  margin-top: 2rem;
+`
+
+const NoteInput = styled.input`
+  width: 100%;
+  height: 40px;
+  border-radius: 10px;
+  padding-left: 0.5rem;
+  box-sizing: border-box;
+`
+
+const SubmitBtn = styled.button`
+  width: 100%;
+  box-sizing: border-box;
+  height: 40px;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  border-radius: 10px;
+  border: 0;
+  font-weight: 900;
+  margin-top: 1rem;
+  :active {
+    background: #000000be;
+  }
+`
+
+const Item = styled.div`
+  margin-top: 1rem;
+
+  > b {
+    margin-right: 0.5rem;
+  }
+`
+
+function App() {
+  const todoReducer = useAppSelector((state) => state.todoReducer)
+  const todoList = todoReducer.todoList
+
+  const [text, setText] = useState('')
+
+  const dispatch = useAppDispatch()
+
   return (
-    <>
-      <main>
-        <h4>[Home Component]</h4>
-      </main>
-      <nav>
-        <Link to='/about'>About</Link>
-      </nav>
-      <button
+    <Wrapper>
+      <Title>TODO LIST</Title>
+      <NoteInput
+        type='text'
+        value={text}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setText(e.target.value)
+        }}
+      />
+      <SubmitBtn
         onClick={() => {
-          navigate('/about/item')
+          if (text === "") {
+            alert("Please type something!")
+            return
+          }
+          dispatch(addTodo(text))
+          setText('')
         }}
       >
-        About Item
-      </button>
-    </>
-  )
-}
-
-const About: React.FC = () => {
-  return (
-    <>
-      <main>
-        <h4>[About Component]</h4>
-      </main>
-      <nav>
-        <Link to='/'>Home</Link>
-      </nav>
-      <Outlet />
-    </>
-  )
-}
-const Item: React.FC = () => {
-  const url = useParams()
-  console.log('url', url)
-  return <p>Item !!!!</p>
-}
-
-const NotFound: React.FC = () => {
-  return <h1>404 Not Found</h1>
-}
-
-const routerConfig: RouteObject[] = [
-  {
-    path: '/',
-    element: <Home />,
-  },
-  {
-    path: '/about',
-    element: <About />,
-    children: [
-      {
-        path: '/about/:id',
-        element: <Item />,
-      },
-    ],
-  },
-  {
-    path: '*',
-    element: <NotFound />,
-  },
-]
-
-const App: React.FC = () => {
-  const element = useRoutes(routerConfig)
-  return (
-    <div className='App'>
-      <h3>Welcome to React Router! [App Component]</h3>
-      {element}
-      {/* <Routes>
-        <Route
-          path='/'
-          element={<Home />}
-        />
-        <Route
-          path='about'
-          element={<About />}
-        >
-          <Route
-            path=':item'
-            element={<Item />}
-          ></Route>
-        </Route>
-      </Routes> */}
-    </div>
+        Submit
+      </SubmitBtn>
+      <SubmitBtn
+        onClick={() => {
+          dispatch(addTimeStamp())
+        }}
+      >
+        Record Timestamp
+      </SubmitBtn>
+      <Title>List</Title>
+      {todoList.map((data, index) => {
+        return (
+          <Item key={data}>
+            <b>{index + 1}</b>
+            {data}
+          </Item>
+        )
+      })}
+    </Wrapper>
   )
 }
 
