@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import { useAppSelector, useAppDispatch } from './hook'
 import { addTimeStamp, addTodo } from './slices/todo'
 import { useState } from 'react'
+import { useGetTodoListQuery } from './services/todoApi'
 
 const Wrapper = styled.div`
   padding: 1.5rem;
@@ -54,6 +55,14 @@ function App() {
 
   const dispatch = useAppDispatch()
 
+  const { data, error, isLoading } = useGetTodoListQuery('1')
+  
+  console.log('data', data)
+  console.log('error', error)
+  console.log('isLoading', isLoading)
+
+  const { userId = 'N/A', title = 'N/A' } = data || {}
+
   return (
     <Wrapper>
       <Title>TODO LIST</Title>
@@ -66,8 +75,8 @@ function App() {
       />
       <SubmitBtn
         onClick={() => {
-          if (text === "") {
-            alert("Please type something!")
+          if (text === '') {
+            alert('Please type something!')
             return
           }
           dispatch(addTodo(text))
@@ -92,6 +101,14 @@ function App() {
           </Item>
         )
       })}
+      <Title>List2</Title>
+      {isLoading && <p>Loading</p>}
+      {!isLoading && (
+        <div>
+          <p>USER ID: {userId}</p>
+          <p>USER TITLE: {title}</p>
+        </div>
+      )}
     </Wrapper>
   )
 }
